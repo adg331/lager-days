@@ -610,7 +610,26 @@ export default function Home() {
           future: d > (today || localDate()),
         }));
   const graphMax = Math.max(500, ...graph.map((x) => x.ml));
-  const worldMax = Math.max(148.8, yStats.ml / 1000, projectedYearMl / 1000);
+  const comparisonRows = [
+    ...countries.map((country) => ({ ...country, kind: 'country' as const })),
+    {
+      name: '我 · 全年估算',
+      en: `${year} PROJECTED`,
+      flag: '🍺',
+      liters: projectedYearMl / 1000,
+      method: `实际累计 ÷ ${yStats.calendarDays} 个已过日历日 × ${selectedYearDays} 天`,
+      kind: 'personal' as const,
+    },
+    {
+      name: '我 · 当前实际',
+      en: `${year} ACTUAL`,
+      flag: '🍺',
+      liters: yStats.ml / 1000,
+      method: `${year} 年截至当前日期的实际记录`,
+      kind: 'personal' as const,
+    },
+  ].sort((a, b) => b.liters - a.liters);
+  const worldMax = Math.max(1, ...comparisonRows.map((row) => row.liters));
   const importDates = pending
     ? [
         ...liveEntries(pending).map((e) => e.date),
@@ -703,7 +722,9 @@ export default function Home() {
                 />
               </label>
             </div>
-            <section className={'today-hero ' + (pulse ? 'has-record' : '')}>
+            <section
+              className={`today-hero ${pulse ? 'has-record' : ''} ${data.prefs.motion ? '' : 'motion-off'}`}
+            >
               <img
                 className="beer-photo"
                 src="/beer-illustration-v2.jpg"
@@ -1237,9 +1258,9 @@ export default function Home() {
                 <h3>各国人均啤酒消费量</h3>
                 <span>2024 · L / 人 / 年</span>
               </div>
-              {countries.map((c, index) => (
+              {comparisonRows.map((c, index) => (
                 <div
-                  className={'country ' + (c.name === '日本' ? 'japan' : '')}
+                  className={`country ${c.name === '日本' ? 'japan' : ''} ${c.kind === 'personal' ? 'personal' : ''}`}
                   key={c.name}
                 >
                   <div className="country-label">
@@ -1257,7 +1278,7 @@ export default function Home() {
                   <div className="country-track">
                     <div style={{ width: `${(c.liters / worldMax) * 100}%` }} />
                   </div>
-                  {c.name === '中国' && (
+                  {(c.name === '中国' || c.kind === 'personal') && (
                     <p className="country-method">{c.method}</p>
                   )}
                 </div>
@@ -1444,14 +1465,24 @@ export default function Home() {
               <div className="setting-row">
                 <div>
                   <strong>酒杯动效</strong>
-                  <p>同时遵循系统“减少动态效果”设置</p>
+                  <p>
+                    当前：{data.prefs.motion ? '开启' : '关闭'}
+                    ；同时遵循系统“减少动态效果”设置
+                  </p>
                 </div>
                 <Switch
                   aria-label="酒杯动效"
                   checked={data.prefs.motion}
-                  onCheckedChange={(v) =>
-                    act((d) => ({ ...d, prefs: { ...d.prefs, motion: v } }))
-                  }
+                  onCheckedChange={(v) => {
+                    const enabled = Boolean(v);
+                    act(
+                      (d) => ({
+                        ...d,
+                        prefs: { ...d.prefs, motion: enabled },
+                      }),
+                      enabled ? '酒杯动效已开启' : '酒杯动效已关闭',
+                    );
+                  }}
                 />
               </div>
             </div>

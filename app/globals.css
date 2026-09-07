@@ -1020,6 +1020,15 @@ small,
 .personal .country-track > div {
   background: #778155;
 }
+.country.personal {
+  padding: 13px;
+  border: 1px solid #d9dfc8;
+  border-radius: 12px;
+  background: #f2f4eb;
+}
+.country.personal .rank {
+  color: #667144;
+}
 .missing-country {
   font-size: 11px;
   color: #9b8a70;
@@ -1293,8 +1302,15 @@ html[data-hidden='true'] * {
   animation-play-state: paused !important;
 }
 html[data-motion='false'] .sparkles,
-html[data-motion='false'] .pour-flash {
+html[data-motion='false'] .pour-flash,
+.today-hero.motion-off .sparkles,
+.today-hero.motion-off .pour-flash {
   display: none;
+}
+html[data-motion='false'] .today-hero .beer-photo,
+.today-hero.motion-off .beer-photo {
+  animation: none !important;
+  filter: none !important;
 }
 [data-slot='toast-viewport'] {
   bottom: calc(90px + env(safe-area-inset-bottom));
