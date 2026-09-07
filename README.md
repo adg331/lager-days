@@ -1,4 +1,4 @@
-# 拉格日记 · LAGER DAYS
+# 喝了么 · LAGER DAYS
 
 一款浏览器本地保存的啤酒日记 App。
 
