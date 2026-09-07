@@ -1,1 +1,1 @@
-{"name":"拉格日记","short_name":"拉格日记","lang":"zh-CN","start_url":"/","display":"standalone","background_color":"#f7f5ee","theme_color":"#f7f5ee","icons":[{"src":"/icon.png","sizes":"192x192","type":"image/png","purpose":"any"}]}
+{"name":"拉格日记","short_name":"拉格日记","lang":"zh-CN","start_url":"/","display":"standalone","background_color":"#f7f5ee","theme_color":"#f7f5ee","icons":[{"src":"/app-icon-v2.png","sizes":"512x512","type":"image/png","purpose":"any maskable"},{"src":"/app-icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"}]}
