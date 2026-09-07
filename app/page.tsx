@@ -497,8 +497,8 @@ export default function Home() {
   async function shareYearReview() {
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = 1080;
-      canvas.height = 1440;
+      canvas.width = 1320;
+      canvas.height = 2868;
       const ctx = canvas.getContext('2d');
       if (!ctx) throw Error('当前浏览器无法生成分享图片');
       const image = new Image();
@@ -507,28 +507,28 @@ export default function Home() {
       const actualLiters = yStats.ml / 1000;
       ctx.fillStyle = '#f3efe3';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      const scale = Math.max(1080 / image.width, 650 / image.height);
+      const scale = Math.max(1320 / image.width, 1180 / image.height);
       const drawWidth = image.width * scale;
       const drawHeight = image.height * scale;
-      ctx.drawImage(image, (1080 - drawWidth) / 2, -90, drawWidth, drawHeight);
-      const gradient = ctx.createLinearGradient(0, 260, 0, 560);
+      ctx.drawImage(image, (1320 - drawWidth) / 2, -120, drawWidth, drawHeight);
+      const gradient = ctx.createLinearGradient(0, 680, 0, 1120);
       gradient.addColorStop(0, 'rgba(38,35,27,0.05)');
       gradient.addColorStop(1, '#f3efe3');
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 200, 1080, 380);
+      ctx.fillRect(0, 620, 1320, 520);
       ctx.fillStyle = '#f3efe3';
-      ctx.fillRect(0, 540, 1080, 900);
+      ctx.fillRect(0, 1080, 1320, 1788);
       ctx.fillStyle = 'rgba(37,34,26,.72)';
-      ctx.fillRect(64, 58, 952, 74);
+      ctx.fillRect(82, 210, 1156, 96);
       ctx.fillStyle = '#f8f2df';
-      ctx.font = '600 26px sans-serif';
-      ctx.fillText('LAGER DAYS  ·  YEARLY JOURNAL', 94, 106);
+      ctx.font = '600 32px sans-serif';
+      ctx.fillText('LAGER DAYS  ·  YEARLY JOURNAL', 118, 272);
       ctx.fillStyle = '#302f28';
-      ctx.font = '700 76px serif';
-      ctx.fillText(`${year} 年拉格回顾`, 72, 650);
+      ctx.font = '700 92px serif';
+      ctx.fillText(`${year} 年拉格回顾`, 88, 1235);
       ctx.fillStyle = '#776a53';
-      ctx.font = '28px sans-serif';
-      ctx.fillText('一杯一记，把这一年的金色时光收藏起来。', 74, 705);
+      ctx.font = '34px sans-serif';
+      ctx.fillText('一杯一记，把这一年的金色时光收藏起来。', 90, 1308);
       const card = (
         x: number,
         y: number,
@@ -537,27 +537,27 @@ export default function Home() {
         color: string,
       ) => {
         ctx.beginPath();
-        ctx.roundRect(x, y, width, height, 28);
+        ctx.roundRect(x, y, width, height, 34);
         ctx.fillStyle = color;
         ctx.fill();
       };
-      card(64, 760, 292, 194, '#fffaf0');
-      card(394, 760, 292, 194, '#fffaf0');
-      card(724, 760, 292, 194, '#e8ecd9');
+      card(80, 1390, 360, 270, '#fffaf0');
+      card(480, 1390, 360, 270, '#fffaf0');
+      card(880, 1390, 360, 270, '#e8ecd9');
       ctx.fillStyle = '#756b56';
-      ctx.font = '25px sans-serif';
-      ctx.fillText('饮酒日', 96, 820);
-      ctx.fillText('饮酒笔', 426, 820);
-      ctx.fillText('500 mL 标准罐', 756, 820);
+      ctx.font = '30px sans-serif';
+      ctx.fillText('饮酒日', 120, 1470);
+      ctx.fillText('饮酒次', 520, 1470);
+      ctx.fillText('500 mL 标准罐', 920, 1470);
       ctx.fillStyle = '#7b5318';
-      ctx.font = '700 72px Georgia, serif';
-      ctx.fillText(String(yStats.drinkingDays), 96, 910);
-      ctx.fillText(String(yStats.entries), 426, 910);
+      ctx.font = '700 92px Georgia, serif';
+      ctx.fillText(String(yStats.drinkingDays), 120, 1590);
+      ctx.fillText(String(yStats.entries), 520, 1590);
       ctx.fillStyle = '#61703e';
-      ctx.fillText((yStats.ml / 500).toFixed(1), 756, 910);
+      ctx.fillText((yStats.ml / 500).toFixed(1), 920, 1590);
       ctx.fillStyle = '#302f28';
-      ctx.font = '600 32px sans-serif';
-      ctx.fillText('年度实际消耗与国家人均对比', 74, 1026);
+      ctx.font = '600 40px sans-serif';
+      ctx.fillText('年度实际消耗与国家人均对比', 90, 1785);
       const china = countries.find((country) => country.name === '中国');
       const referenceRows = [
         ...countries.slice(0, 3).map((country) => ({
@@ -573,22 +573,22 @@ export default function Home() {
         1,
       );
       referenceRows.forEach((row, index) => {
-        const y = 1085 + index * 59;
+        const y = 1900 + index * 130;
         ctx.fillStyle = '#786d5a';
-        ctx.font = '24px sans-serif';
-        ctx.fillText(row.label, 74, y);
+        ctx.font = '30px sans-serif';
+        ctx.fillText(row.label, 90, y);
         ctx.fillStyle = '#ded7c8';
-        ctx.fillRect(230, y - 18, 650, 15);
+        ctx.fillRect(300, y - 24, 760, 20);
         ctx.fillStyle = row.color;
-        ctx.fillRect(230, y - 18, (row.value / referenceMax) * 650, 15);
+        ctx.fillRect(300, y - 24, (row.value / referenceMax) * 760, 20);
         ctx.fillStyle = '#524939';
         ctx.textAlign = 'right';
-        ctx.fillText(`${row.value.toFixed(1)} L`, 1006, y);
+        ctx.fillText(`${row.value.toFixed(1)} L`, 1230, y);
         ctx.textAlign = 'left';
       });
       ctx.fillStyle = '#988b75';
-      ctx.font = '20px sans-serif';
-      ctx.fillText('国家数据：Kirin 2024 · 我的实际：喝了么本机记录', 74, 1408);
+      ctx.font = '25px sans-serif';
+      ctx.fillText('国家数据：Kirin 2024 · 我的实际：喝了么本机记录', 90, 2735);
       const blob = await new Promise<Blob | null>((resolve) =>
         canvas.toBlob(resolve, 'image/png'),
       );
@@ -600,7 +600,7 @@ export default function Home() {
         await navigator.share({
           files: [file],
           title: '喝了么',
-          text: `${year} 年记录了 ${yStats.drinkingDays} 个饮酒日、${yStats.entries} 笔，合计 ${(yStats.ml / 500).toFixed(1)} 个 500 mL 标准罐。`,
+          text: `${year} 年记录了 ${yStats.drinkingDays} 个饮酒日、${yStats.entries} 次，合计 ${(yStats.ml / 500).toFixed(1)} 个 500 mL 标准罐。`,
         });
       } else {
         const url = URL.createObjectURL(blob);
@@ -790,7 +790,7 @@ export default function Home() {
                 </div>
                 <span className="hero-meta">
                   {dayEntries.length
-                    ? `${dayEntries.length} 笔 · ${(total / 500).toFixed(2).replace(/\.00$/, '')} 标准罐`
+                    ? `${dayEntries.length} 次 · ${(total / 500).toFixed(2).replace(/\.00$/, '')} 标准罐`
                     : dayStatus === 'dry'
                       ? '今天留白，也有记录'
                       : '从记下第一杯开始'}
@@ -1047,10 +1047,25 @@ export default function Home() {
                 啤酒
               </div>
             </section>
+            {period === 'year' && (
+              <section className="stat-projection">
+                <div>
+                  <span>按当前饮用量估算全年</span>
+                  <strong>{(projectedYearMl / 1000).toFixed(1)} L / 年</strong>
+                </div>
+                <p>
+                  实际累计 ÷ {yStats.calendarDays} 个已过日历日 ×{' '}
+                  {selectedYearDays} 天。
+                  {yStats.missingDays
+                    ? `还有 ${yStats.missingDays} 天未确认完整，估算可能偏低。`
+                    : '已过日期均已确认完整。'}
+                </p>
+              </section>
+            )}
             <div className="metrics-grid">
               <Metric label="饮酒天数" value={stats.drinkingDays} unit="天" />
               <Metric label="明确未饮酒" value={stats.dryDays} unit="天" />
-              <Metric label="已记录笔数" value={stats.entries} unit="笔" />
+              <Metric label="饮酒次数" value={stats.entries} unit="次" />
             </div>
             <section className="panel">
               <div className="section-line">
@@ -1214,7 +1229,7 @@ export default function Home() {
                 ，你的“喝了么”记录
               </h3>
               <p>
-                记下了 {stats.entries} 笔，合计 {compact(stats.ml)}。<br />
+                记下了 {stats.entries} 次，合计 {compact(stats.ml)}。<br />
                 其中易拉罐{' '}
                 {compact(
                   volume(
@@ -1248,9 +1263,9 @@ export default function Home() {
               <h2>把一杯，放进世界里。</h2>
               <p>看看不同地方的啤酒日常。</p>
             </div>
-            <section className="world-personal">
+            <section className="world-year-picker">
               <label className="year-field">
-                我的年份
+                对比与分享年份
                 <input
                   aria-label="对比年份"
                   type="number"
@@ -1263,38 +1278,6 @@ export default function Home() {
                   }}
                 />
               </label>
-              <div className="personal-volume-grid">
-                <div>
-                  <span>当前实际消耗</span>
-                  <p className="world-number">
-                    {(yStats.ml / 1000).toFixed(2)}
-                    <small>L</small>
-                  </p>
-                  <small>
-                    {year} 年累计
-                    {year === Number(today.slice(0, 4))
-                      ? ` · 截至 ${today.slice(5).replace('-', '月')}日`
-                      : ''}
-                  </small>
-                </div>
-                <div>
-                  <span>按当前饮用量估算全年</span>
-                  <p className="world-number projected">
-                    {(projectedYearMl / 1000).toFixed(1)}
-                    <small>L / 年</small>
-                  </p>
-                  <small>
-                    实际累计 ÷ {yStats.calendarDays} 个已过日历日 ×{' '}
-                    {selectedYearDays} 天
-                  </small>
-                </div>
-              </div>
-              <p className="body-note">
-                {yStats.missingDays
-                  ? `${yStats.missingDays} 个已过日期尚未确认完整。`
-                  : '所选年度的已过日期已确认完整。'}
-                全年估算按现有记录直接外推；记录不完整时可能偏低。
-              </p>
             </section>
             <section className="annual-share-card">
               <img
@@ -1311,7 +1294,7 @@ export default function Home() {
                     <strong>{yStats.drinkingDays}</strong>
                   </div>
                   <div>
-                    <small>饮酒笔</small>
+                    <small>饮酒次</small>
                     <strong>{yStats.entries}</strong>
                   </div>
                   <div>
