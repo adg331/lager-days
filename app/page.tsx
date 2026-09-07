@@ -20,6 +20,8 @@ import {
   CalendarDays,
   ShieldCheck,
   Share2,
+  Undo2,
+  Eraser,
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
@@ -65,6 +67,14 @@ import {
   type Entry,
 } from '@/lib/diary';
 const stamp = () => new Date().toISOString();
+const IMPORT_UNDO_KEY = 'lager-diary.import-undo.v1';
+type ImportUndo = {
+  version: 1;
+  createdAt: string;
+  fileName: string;
+  mode: 'merge' | 'replace';
+  diary: Diary;
+};
 const compact = (ml: number) => {
   const v = displayVolume(ml);
   return `${v.number} ${v.unit}`;
@@ -121,6 +131,55 @@ function Metric({
     </div>
   );
 }
+function ConfirmOverlay({
+  title,
+  description,
+  confirmLabel,
+  danger = false,
+  disabled = false,
+  onCancel,
+  onConfirm,
+}: {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  danger?: boolean;
+  disabled?: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div
+      className="settings-modal-layer"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onCancel();
+      }}
+    >
+      <section
+        className="app-dialog confirm-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+      >
+        <h2 id="confirm-title">{title}</h2>
+        <p>{description}</p>
+        <div className="confirm-actions">
+          <button className="soft-button" onClick={onCancel}>
+            取消
+          </button>
+          <button
+            className={danger ? 'danger-button' : 'gold-button'}
+            disabled={disabled}
+            onClick={onConfirm}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
 function AnimatedNumber({
   value,
   enabled,
@@ -174,7 +233,11 @@ export default function Home() {
   const [period, setPeriod] = useState('month');
   const [year, setYear] = useState(new Date().getFullYear());
   const [pending, setPending] = useState<Diary | null>(null);
+  const [pendingFileName, setPendingFileName] = useState('');
   const [replace, setReplace] = useState(false);
+  const [importUndo, setImportUndo] = useState<ImportUndo | null>(null);
+  const [undoImportOpen, setUndoImportOpen] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
   const [confirm, setConfirm] = useState<{ start: string; end: string } | null>(
     null,
   );
@@ -227,6 +290,25 @@ export default function Home() {
           setBlocked(
             '现有数据无法读取。请先在设置中导出原始数据，再导入有效备份。',
           );
+        }
+      }
+      const undoRaw = localStorage.getItem(IMPORT_UNDO_KEY);
+      if (undoRaw) {
+        try {
+          const candidate = JSON.parse(undoRaw) as ImportUndo;
+          if (
+            candidate.version !== 1 ||
+            typeof candidate.createdAt !== 'string' ||
+            typeof candidate.fileName !== 'string' ||
+            !['merge', 'replace'].includes(candidate.mode)
+          )
+            throw Error('invalid import undo snapshot');
+          setImportUndo({
+            ...candidate,
+            diary: validateDiary(candidate.diary),
+          });
+        } catch {
+          setImportUndo(null);
         }
       }
     } catch {
@@ -463,10 +545,13 @@ export default function Home() {
   }
   async function importFile(file?: File) {
     if (!file) return;
+    setPending(null);
+    setPendingFileName('');
     try {
       if (file.size > 8 * 1024 * 1024) throw Error('备份文件不能超过 8 MB');
       const d = validateDiary(JSON.parse(await file.text()));
       setPending(d);
+      setPendingFileName(file.name);
       setReplace(false);
     } catch (e) {
       report(e);
@@ -476,6 +561,14 @@ export default function Home() {
   function restore(overwrite: boolean) {
     if (!pending) return;
     try {
+      const undo: ImportUndo = {
+        version: 1,
+        createdAt: stamp(),
+        fileName: pendingFileName || '未命名备份.json',
+        mode: overwrite ? 'replace' : 'merge',
+        diary: ref.current,
+      };
+      localStorage.setItem(IMPORT_UNDO_KEY, JSON.stringify(undo));
       commit(
         (d) =>
           overwrite
@@ -485,13 +578,57 @@ export default function Home() {
       );
       setBlocked('');
       setPending(null);
+      setPendingFileName('');
       setReplace(false);
+      setImportUndo(undo);
       toast.add({
         title: overwrite ? '备份已恢复' : '备份已合并，重复记录不会增加',
         type: 'success',
       });
     } catch (e) {
       report(e);
+    }
+  }
+  function undoLastImport() {
+    if (!importUndo) return;
+    try {
+      download(
+        JSON.stringify(ref.current, null, 2),
+        `喝了么-撤销导入前安全备份-${localDate()}.json`,
+        'application/json',
+      );
+      commit(() => importUndo.diary, true);
+      localStorage.removeItem(IMPORT_UNDO_KEY);
+      setImportUndo(null);
+      setUndoImportOpen(false);
+      setBlocked('');
+      toast.add({
+        title: '已撤销最近一次导入',
+        description: '当前数据已恢复到导入前，操作前的数据也已导出备份。',
+        type: 'success',
+      });
+    } catch (error) {
+      report(error);
+    }
+  }
+  function clearAllRecords() {
+    try {
+      download(
+        JSON.stringify(ref.current, null, 2),
+        `喝了么-清空前安全备份-${localDate()}.json`,
+        'application/json',
+      );
+      commit((d) => ({ ...d, entries: [], days: {} }));
+      localStorage.removeItem(IMPORT_UNDO_KEY);
+      setImportUndo(null);
+      setClearOpen(false);
+      toast.add({
+        title: '全部记录已清空',
+        description: '清空前的完整备份已导出。',
+        type: 'success',
+      });
+    } catch (error) {
+      report(error);
     }
   }
   async function shareYearReview() {
@@ -1628,6 +1765,38 @@ export default function Home() {
                   用于查看记录，不用于完整恢复。导出时间不代表文件已保存，请检查“文件”中的备份。
                 </p>
               </section>
+              <section className="settings-section danger-zone">
+                <h3>数据管理</h3>
+                <p className="body-note">
+                  {importUndo
+                    ? `可撤销 ${new Date(importUndo.createdAt).toLocaleString('zh-CN')} 导入的“${importUndo.fileName}”。`
+                    : '当前没有可撤销的导入。只保留最近一次导入前的状态。'}
+                </p>
+                <button
+                  className="soft-button full"
+                  disabled={!importUndo}
+                  onClick={() => {
+                    setSettings(false);
+                    setUndoImportOpen(true);
+                  }}
+                >
+                  <Undo2 size={18} />
+                  撤销最近一次导入
+                </button>
+                <button
+                  className="danger-button full"
+                  disabled={
+                    !data.entries.length && !Object.keys(data.days).length
+                  }
+                  onClick={() => {
+                    setSettings(false);
+                    setClearOpen(true);
+                  }}
+                >
+                  <Eraser size={18} />
+                  清空全部记录
+                </button>
+              </section>
               <section className="settings-section">
                 <h3>
                   <ShieldCheck size={18} />
@@ -1650,82 +1819,82 @@ export default function Home() {
             </section>
           </div>
         )}
-        <Dialog
-          open={!!pending && !replace}
-          onOpenChange={(open) => {
-            if (!open) setPending(null);
-          }}
-        >
-          <DialogContent className="app-dialog" showCloseButton={false}>
-            <DialogTitle>检查这份备份</DialogTitle>
-            <DialogDescription>
-              导入前请确认记录范围。默认合并，同一编号按较新的修改时间保留。
-            </DialogDescription>
-            <div className="import-summary">
-              <p>
-                有效记录{' '}
-                <strong>{pending ? liveEntries(pending).length : 0} 笔</strong>
-              </p>
-              <p>
-                新增记录 <strong>{newCount} 笔</strong>
-              </p>
-              <p>
-                日期范围{' '}
-                <strong>
-                  {importDates.length
-                    ? `${importDates[0]} ～ ${importDates.at(-1)}`
-                    : '空备份'}
-                </strong>
-              </p>
-              <p>
-                完整日期标记{' '}
-                <strong>
-                  {pending
-                    ? Object.values(pending.days).filter(
-                        (d) => d.status !== 'unknown',
-                      ).length
-                    : 0}{' '}
-                  天
-                </strong>
-              </p>
-            </div>
-            <button
-              className="gold-button full"
-              disabled={!!blocked}
-              onClick={() => restore(false)}
+        {pending && !replace && (
+          <div className="settings-modal-layer" role="presentation">
+            <section
+              className="app-dialog import-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="import-title"
             >
-              合并导入
-            </button>
-            <button
-              className="soft-button full"
-              onClick={() => setReplace(true)}
-            >
-              用备份替换本机日记…
-            </button>
-            <DialogClose className="text-button centered">取消</DialogClose>
-          </DialogContent>
-        </Dialog>
-        <AlertDialog
-          open={replace}
-          onOpenChange={(v) => {
-            setReplace(v);
-            if (!v) setPending(null);
-          }}
-        >
-          <AlertDialogContent className="app-dialog">
-            <AlertDialogTitle>替换当前设备的日记？</AlertDialogTitle>
-            <AlertDialogDescription>
-              现有记录会被这份备份替换。建议先导出当前日记；未备份的记录将无法恢复。
-            </AlertDialogDescription>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction
-              className="gold-button"
-              onClick={() => restore(true)}
-            >
-              确认替换并恢复
-            </AlertDialogAction>
-          </AlertDialogContent>
-        </AlertDialog>
+              <h2 id="import-title">检查这份备份</h2>
+              <p className="settings-description">
+                导入前请确认记录范围。默认合并，同一编号按较新的修改时间保留。
+              </p>
+              <div className="import-summary">
+                <p>
+                  有效记录{' '}
+                  <strong>
+                    {pending ? liveEntries(pending).length : 0} 笔
+                  </strong>
+                </p>
+                <p>
+                  新增记录 <strong>{newCount} 笔</strong>
+                </p>
+                <p>
+                  日期范围{' '}
+                  <strong>
+                    {importDates.length
+                      ? `${importDates[0]} ～ ${importDates.at(-1)}`
+                      : '空备份'}
+                  </strong>
+                </p>
+                <p>
+                  完整日期标记{' '}
+                  <strong>
+                    {pending
+                      ? Object.values(pending.days).filter(
+                          (d) => d.status !== 'unknown',
+                        ).length
+                      : 0}{' '}
+                    天
+                  </strong>
+                </p>
+              </div>
+              <button
+                className="gold-button full"
+                disabled={!!blocked}
+                onClick={() => restore(false)}
+              >
+                合并导入
+              </button>
+              <button
+                className="soft-button full"
+                onClick={() => setReplace(true)}
+              >
+                用备份替换本机日记…
+              </button>
+              <button
+                className="text-button centered"
+                onClick={() => {
+                  setPending(null);
+                  setPendingFileName('');
+                }}
+              >
+                取消
+              </button>
+            </section>
+          </div>
+        )}
+        {replace && pending && (
+          <ConfirmOverlay
+            title="替换当前设备的日记？"
+            description="现有记录会被这份备份替换。建议先导出当前日记；未备份的记录将无法恢复。"
+            confirmLabel="确认替换并恢复"
+            onCancel={() => setReplace(false)}
+            onConfirm={() => restore(true)}
+          />
+        )}
         <AlertDialog
           open={!!confirm}
           onOpenChange={(open) => {
@@ -1756,6 +1925,26 @@ export default function Home() {
             </AlertDialogAction>
           </AlertDialogContent>
         </AlertDialog>
+        {undoImportOpen && (
+          <ConfirmOverlay
+            title="撤销最近一次导入？"
+            description={`将整个日记恢复到导入“${importUndo?.fileName ?? ''}”之前。导入完成后新增或修改的记录也会被回退；操作前会自动导出当前完整备份。`}
+            confirmLabel="导出当前备份并撤销"
+            disabled={!importUndo}
+            onCancel={() => setUndoImportOpen(false)}
+            onConfirm={undoLastImport}
+          />
+        )}
+        {clearOpen && (
+          <ConfirmOverlay
+            title="清空全部记录？"
+            description="将删除所有饮酒记录及日期状态，保留动效和默认来源设置。执行前会自动导出完整 JSON，之后可通过导入该文件恢复。"
+            confirmLabel="导出备份并清空"
+            danger
+            onCancel={() => setClearOpen(false)}
+            onConfirm={clearAllRecords}
+          />
+        )}
       </main>
     </Toaster>
   );
