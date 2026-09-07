@@ -448,7 +448,7 @@ export default function Home() {
       const next = { ...ref.current, lastBackup: stamp() };
       download(
         JSON.stringify(next, null, 2),
-        `拉格日记-备份-${localDate()}.json`,
+        `喝了么-备份-${localDate()}.json`,
         'application/json',
       );
       commit(() => next);
@@ -594,22 +594,18 @@ export default function Home() {
       });
       ctx.fillStyle = '#988b75';
       ctx.font = '20px sans-serif';
-      ctx.fillText(
-        '国家数据：Kirin 2024 · 个人数据：拉格日记本机记录',
-        74,
-        1412,
-      );
+      ctx.fillText('国家数据：Kirin 2024 · 个人数据：喝了么本机记录', 74, 1412);
       const blob = await new Promise<Blob | null>((resolve) =>
         canvas.toBlob(resolve, 'image/png'),
       );
       if (!blob) throw Error('打卡图片生成失败');
-      const file = new File([blob], `拉格日记-${year}-年度回顾.png`, {
+      const file = new File([blob], `喝了么-${year}-年度回顾.png`, {
         type: 'image/png',
       });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: '拉格日记',
+          title: '喝了么',
           text: `${year} 年已记录 ${actualLiters.toFixed(2)} L，全年估算 ${projectedLiters.toFixed(1)} L。`,
         });
       } else {
@@ -710,7 +706,7 @@ export default function Home() {
         <header className="header">
           <div className="brand">
             <span className="seal">麦</span>
-            <h1>拉格日记</h1>
+            <h1>喝了么</h1>
           </div>
         </header>
         <p>正在打开本机日记…</p>
@@ -725,7 +721,7 @@ export default function Home() {
               麦
             </span>
             <div>
-              <h1>拉格日记</h1>
+              <h1>喝了么</h1>
               <small>LAGER DAYS</small>
             </div>
           </div>
@@ -1221,7 +1217,7 @@ export default function Home() {
                 {period === 'month'
                   ? `${Number(month.slice(5))} 月`
                   : `${year} 年`}
-                ，你的拉格日记
+                ，你的“喝了么”记录
               </h3>
               <p>
                 记下了 {stats.entries} 笔，合计 {compact(stats.ml)}。<br />
@@ -1622,7 +1618,7 @@ export default function Home() {
                   onClick={() =>
                     download(
                       csvExport(data),
-                      `拉格日记-记录-${today}.csv`,
+                      `喝了么-记录-${today}.csv`,
                       'text/csv;charset=utf-8',
                     )
                   }
@@ -1637,7 +1633,7 @@ export default function Home() {
                     onClick={() =>
                       download(
                         rawBad.current,
-                        '拉格日记-原始数据.json',
+                        '喝了么-原始数据.json',
                         'application/json',
                       )
                     }
@@ -1668,7 +1664,7 @@ export default function Home() {
                 </p>
               </section>
               <p className="settings-signature">
-                拉格日记 · LAGER DAYS <span>v1.0</span>
+                喝了么 · LAGER DAYS <span>v1.0</span>
               </p>
             </section>
           </div>

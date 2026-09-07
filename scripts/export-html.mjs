@@ -47,7 +47,7 @@ html = html.replace(
   '</head>',
   `<link rel="icon" href="${icon}"/><link rel="apple-touch-icon" href="${icon}"/></head>`,
 );
-await fs.writeFile(path.join(out, '拉格日记.html'), html);
+await fs.writeFile(path.join(out, '喝了么.html'), html);
 console.log(
   'Standalone HTML created (' +
     Math.round(Buffer.byteLength(html) / 1024) +

@@ -119,7 +119,7 @@ export function validateDiary(raw: unknown): Diary {
     typeof x.days !== 'object' ||
     Array.isArray(x.days)
   )
-    throw Error('不是有效的拉格日记 v1 备份');
+    throw Error('不是有效的“喝了么”v1 备份');
   const entries = x.entries.map(validateEntry);
   if (new Set(entries.map((e) => e.id)).size !== entries.length)
     throw Error('备份包含重复的记录编号');

@@ -1,4 +1,4 @@
-# 拉格日记
+# 喝了么
 
 主要面向 iPhone 的设备本机啤酒日记。数据仅写入当前浏览器 localStorage，不上传饮酒记录或导入的备份；无账号体系。
 
@@ -10,7 +10,7 @@ public/lager-diary.html 是包含图片、样式和脚本的单文件版本，�
 
 ## 运行与验证
 
-Node >=22.13。npm ci；npm run dev；npm run build。node --experimental-strip-types --test lib/diary.test.ts；npx tsc --noEmit。生成单文件：node scripts/export-html.mjs，产物 standalone-build/拉格日记.html；发布前复制到 public/lager-diary.html。
+Node >=22.13。npm ci；npm run dev；npm run build。node --experimental-strip-types --test lib/diary.test.ts；npx tsc --noEmit。生成单文件：node scripts/export-html.mjs，产物 standalone-build/喝了么.html；发布前复制到 public/lager-diary.html。
 
 ## 统计口径
 
