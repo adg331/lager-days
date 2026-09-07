@@ -999,8 +999,8 @@ small,
 }
 .annual-share-numbers {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
   margin-bottom: 22px;
 }
 .annual-share-numbers > div {
@@ -1014,7 +1014,7 @@ small,
 }
 .annual-share-numbers strong {
   font:
-    500 26px Georgia,
+    500 24px Georgia,
     serif;
 }
 .annual-share-content button {
