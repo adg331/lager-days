@@ -195,20 +195,6 @@ small,
 .quick-panel {
   margin: 25px 0;
 }
-.share-checkin {
-  width: 100%;
-  min-height: 48px;
-  margin-top: 14px;
-  border: 1px solid #d8c499;
-  border-radius: 14px;
-  background: #fffdf5;
-  color: #76551f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 14px;
-}
 .section-line {
   display: flex;
   justify-content: space-between;
@@ -959,6 +945,92 @@ small,
 .world-personal .body-note {
   font-size: 12px;
 }
+.annual-share-card {
+  position: relative;
+  min-height: 390px;
+  margin: 22px 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #302d25;
+  box-shadow: 0 18px 45px rgb(64 48 21 / 16%);
+}
+.annual-share-card > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 58% 42%;
+}
+.annual-share-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgb(35 32 25 / 87%) 0%,
+      rgb(35 32 25 / 61%) 48%,
+      transparent 82%
+    ),
+    linear-gradient(0deg, rgb(35 32 25 / 74%) 0%, transparent 50%);
+}
+.annual-share-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 390px;
+  max-width: 72%;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 30px;
+  color: #fff9eb;
+}
+.annual-share-content > span {
+  margin-bottom: auto;
+  color: #ead5a4;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.annual-share-content h3 {
+  margin-bottom: 18px;
+  font-family: 'Songti SC', serif;
+  font-size: 29px;
+  font-weight: 600;
+}
+.annual-share-numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-bottom: 22px;
+}
+.annual-share-numbers > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.annual-share-numbers small {
+  color: #ddcfaf;
+  font-size: 11px;
+}
+.annual-share-numbers strong {
+  font:
+    500 26px Georgia,
+    serif;
+}
+.annual-share-content button {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid rgb(255 245 220 / 54%);
+  border-radius: 12px;
+  background: rgb(255 250 235 / 93%);
+  color: #513813;
+  font-size: 14px;
+}
 .country {
   margin: 23px 0;
 }
@@ -1147,6 +1219,38 @@ small,
   border-radius: 22px;
   background: #faf8f0;
   overscroll-behavior: contain;
+}
+.settings-modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 12%);
+  backdrop-filter: blur(3px);
+}
+.settings-dialog {
+  width: min(450px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 22px;
+  background: #faf8f0;
+  box-shadow: 0 22px 70px rgb(35 29 18 / 22%);
+  overscroll-behavior: contain;
+}
+.settings-dialog h2 {
+  font-family: 'Songti SC', serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.settings-description {
+  margin: 10px 0 18px;
+  color: #82745f;
+  font-size: 14px;
+  line-height: 1.7;
 }
 .app-dialog [data-slot='dialog-title'],
 .app-dialog [data-slot='alert-dialog-title'] {
@@ -1487,6 +1591,23 @@ html[data-motion='false'] .today-hero .beer-photo,
   }
   .personal-volume-grid .world-number {
     font-size: 46px;
+  }
+  .annual-share-card,
+  .annual-share-content {
+    min-height: 360px;
+  }
+  .annual-share-content {
+    max-width: 82%;
+    padding: 24px 20px;
+  }
+  .annual-share-content h3 {
+    font-size: 25px;
+  }
+  .annual-share-numbers {
+    gap: 12px;
+  }
+  .annual-share-numbers strong {
+    font-size: 22px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

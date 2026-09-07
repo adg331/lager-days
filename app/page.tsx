@@ -494,7 +494,7 @@ export default function Home() {
       report(e);
     }
   }
-  async function shareCheckIn() {
+  async function shareYearReview() {
     try {
       const canvas = document.createElement('canvas');
       canvas.width = 1080;
@@ -504,56 +504,113 @@ export default function Home() {
       const image = new Image();
       image.src = '/beer-illustration-v2.jpg';
       await image.decode();
-      ctx.fillStyle = '#f7f5ee';
+      const actualLiters = yStats.ml / 1000;
+      const projectedLiters = projectedYearMl / 1000;
+      ctx.fillStyle = '#f3efe3';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      const scale = Math.max(1080 / image.width, 850 / image.height);
+      const scale = Math.max(1080 / image.width, 650 / image.height);
       const drawWidth = image.width * scale;
       const drawHeight = image.height * scale;
-      ctx.drawImage(image, (1080 - drawWidth) / 2, 0, drawWidth, drawHeight);
-      const gradient = ctx.createLinearGradient(0, 470, 0, 940);
-      gradient.addColorStop(0, 'rgba(247,245,238,0)');
-      gradient.addColorStop(1, '#f7f5ee');
+      ctx.drawImage(image, (1080 - drawWidth) / 2, -90, drawWidth, drawHeight);
+      const gradient = ctx.createLinearGradient(0, 240, 0, 700);
+      gradient.addColorStop(0, 'rgba(38,35,27,0.05)');
+      gradient.addColorStop(1, '#f3efe3');
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 450, 1080, 500);
-      ctx.fillStyle = '#6d501f';
-      ctx.font = '600 34px sans-serif';
-      ctx.letterSpacing = '8px';
-      ctx.fillText('LAGER DAYS', 80, 910);
-      ctx.letterSpacing = '0px';
+      ctx.fillRect(0, 180, 1080, 560);
+      ctx.fillStyle = 'rgba(37,34,26,.72)';
+      ctx.fillRect(64, 58, 952, 74);
+      ctx.fillStyle = '#f8f2df';
+      ctx.font = '600 26px sans-serif';
+      ctx.fillText('LAGER DAYS  ·  YEARLY JOURNAL', 94, 106);
       ctx.fillStyle = '#302f28';
-      ctx.font = '700 72px serif';
-      ctx.fillText('拉格日记', 80, 1015);
+      ctx.font = '700 76px serif';
+      ctx.fillText(`${year} 年拉格回顾`, 72, 700);
+      ctx.fillStyle = '#776a53';
+      ctx.font = '30px sans-serif';
+      ctx.fillText('一杯一记，把这一年的金色时光收藏起来。', 74, 752);
+      const card = (
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        color: string,
+      ) => {
+        ctx.beginPath();
+        ctx.roundRect(x, y, width, height, 28);
+        ctx.fillStyle = color;
+        ctx.fill();
+      };
+      card(64, 800, 460, 236, '#fffaf0');
+      card(556, 800, 460, 236, '#e8ecd9');
       ctx.fillStyle = '#756b56';
-      ctx.font = '36px sans-serif';
-      ctx.fillText(`${date} · ${dayLabel(date)}`, 80, 1080);
-      ctx.fillStyle = '#8c611e';
-      ctx.font = '700 130px Georgia, serif';
-      ctx.fillText(displayVolume(total).number, 80, 1245);
-      const numberWidth = ctx.measureText(displayVolume(total).number).width;
-      ctx.font = '34px sans-serif';
-      ctx.fillText(displayVolume(total).unit, 95 + numberWidth, 1240);
+      ctx.font = '28px sans-serif';
+      ctx.fillText('当前实际消耗', 98, 862);
+      ctx.fillText('按当前记录估算全年', 590, 862);
+      ctx.fillStyle = '#7b5318';
+      ctx.font = '700 86px Georgia, serif';
+      ctx.fillText(actualLiters.toFixed(2), 98, 962);
+      ctx.fillStyle = '#61703e';
+      ctx.fillText(projectedLiters.toFixed(1), 590, 962);
+      ctx.font = '28px sans-serif';
+      ctx.fillStyle = '#7b5318';
+      ctx.fillText('L', 330, 960);
+      ctx.fillStyle = '#61703e';
+      ctx.fillText('L / 年', 820, 960);
+      ctx.fillStyle = '#8d806a';
+      ctx.font = '23px sans-serif';
+      ctx.fillText(`截至 ${today}`, 98, 1010);
+      ctx.fillText(`基于 ${yStats.calendarDays} 个已过日历日`, 590, 1010);
+      ctx.fillStyle = '#302f28';
+      ctx.font = '600 32px sans-serif';
+      ctx.fillText('年度记录', 74, 1114);
       ctx.fillStyle = '#756b56';
-      ctx.font = '32px sans-serif';
+      ctx.font = '29px sans-serif';
+      ctx.fillText(`${yStats.entries} 笔`, 74, 1172);
+      ctx.fillText(`${yStats.drinkingDays} 个饮酒日`, 270, 1172);
       ctx.fillText(
-        `${dayEntries.length} 笔记录 · ${(total / 500).toFixed(2)} 个 500 mL 标准罐`,
-        80,
-        1310,
+        `${(yStats.ml / 500).toFixed(1)} 个 500 mL 标准罐`,
+        550,
+        1172,
       );
-      ctx.fillStyle = '#9b8d72';
-      ctx.font = '26px sans-serif';
-      ctx.fillText('一杯一记，留住好时光。', 80, 1370);
+      const referenceRows = [
+        { label: '日本人均 2024', value: 33.7, color: '#d1a247' },
+        { label: '中国人均 2024', value: 28.8, color: '#ad9470' },
+        { label: '我的全年估算', value: projectedLiters, color: '#6f7c49' },
+      ];
+      const referenceMax = Math.max(33.7, projectedLiters, 1);
+      referenceRows.forEach((row, index) => {
+        const y = 1242 + index * 55;
+        ctx.fillStyle = '#786d5a';
+        ctx.font = '22px sans-serif';
+        ctx.fillText(row.label, 74, y);
+        ctx.fillStyle = '#ded7c8';
+        ctx.fillRect(310, y - 18, 570, 14);
+        ctx.fillStyle = row.color;
+        ctx.fillRect(310, y - 18, (row.value / referenceMax) * 570, 14);
+        ctx.fillStyle = '#524939';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${row.value.toFixed(1)} L`, 1006, y);
+        ctx.textAlign = 'left';
+      });
+      ctx.fillStyle = '#988b75';
+      ctx.font = '20px sans-serif';
+      ctx.fillText(
+        '国家数据：Kirin 2024 · 个人数据：拉格日记本机记录',
+        74,
+        1412,
+      );
       const blob = await new Promise<Blob | null>((resolve) =>
         canvas.toBlob(resolve, 'image/png'),
       );
       if (!blob) throw Error('打卡图片生成失败');
-      const file = new File([blob], `拉格日记-${date}.png`, {
+      const file = new File([blob], `拉格日记-${year}-年度回顾.png`, {
         type: 'image/png',
       });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: '拉格日记',
-          text: `${date}，记录了 ${compact(total)}。`,
+          text: `${year} 年已记录 ${actualLiters.toFixed(2)} L，全年估算 ${projectedLiters.toFixed(1)} L。`,
         });
       } else {
         const url = URL.createObjectURL(blob);
@@ -768,10 +825,6 @@ export default function Home() {
               />
               <span className="photo-caption">JAPANESE LAGER / 生ビール</span>
             </section>
-            <button className="share-checkin" onClick={shareCheckIn}>
-              <Share2 size={18} />
-              分享这天的打卡图片
-            </button>
             <section className="quick-panel">
               <div className="section-line">
                 <h2>{date === today ? '记下一杯' : '补记这一天'}</h2>
@@ -1253,6 +1306,31 @@ export default function Home() {
                 全年估算按现有记录直接外推；记录不完整时可能偏低。
               </p>
             </section>
+            <section className="annual-share-card">
+              <img
+                src="/beer-illustration-v2.jpg"
+                alt="原创手绘的金色拉格酒杯"
+              />
+              <div className="annual-share-overlay" />
+              <div className="annual-share-content">
+                <span>LAGER DAYS · YEARLY JOURNAL</span>
+                <h3>{year} 年拉格回顾</h3>
+                <div className="annual-share-numbers">
+                  <div>
+                    <small>实际累计</small>
+                    <strong>{(yStats.ml / 1000).toFixed(2)} L</strong>
+                  </div>
+                  <div>
+                    <small>全年估算</small>
+                    <strong>{(projectedYearMl / 1000).toFixed(1)} L</strong>
+                  </div>
+                </div>
+                <button onClick={shareYearReview}>
+                  <Share2 size={18} />
+                  生成并分享年度回顾
+                </button>
+              </div>
+            </section>
             <section className="panel world-chart">
               <div className="section-line">
                 <h3>各国人均啤酒消费量</h3>
@@ -1450,127 +1528,151 @@ export default function Home() {
             )}
           </DialogContent>
         </Dialog>
-        <Dialog open={settings} onOpenChange={setSettings}>
-          <DialogContent className="app-dialog" showCloseButton={false}>
-            <div className="dialog-heading">
-              <DialogTitle>设置与备份</DialogTitle>
-              <DialogClose className="icon-button" aria-label="关闭设置">
-                <X size={19} />
-              </DialogClose>
-            </div>
-            <DialogDescription>
-              你的日记保存在当前设备与浏览器中。
-            </DialogDescription>
-            <div className="settings-section">
-              <div className="setting-row">
-                <div>
-                  <strong>酒杯动效</strong>
-                  <p>
-                    当前：{data.prefs.motion ? '开启' : '关闭'}
-                    ；同时遵循系统“减少动态效果”设置
-                  </p>
-                </div>
-                <Switch
-                  aria-label="酒杯动效"
-                  checked={data.prefs.motion}
-                  onCheckedChange={(v) => {
-                    const enabled = Boolean(v);
-                    act(
-                      (d) => ({
-                        ...d,
-                        prefs: { ...d.prefs, motion: enabled },
-                      }),
-                      enabled ? '酒杯动效已开启' : '酒杯动效已关闭',
-                    );
+        {settings && (
+          <div
+            className="settings-modal-layer"
+            role="presentation"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setSettings(false);
+            }}
+          >
+            <section
+              className="app-dialog settings-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="settings-title"
+            >
+              <div className="dialog-heading">
+                <h2 id="settings-title">设置与备份</h2>
+                <button
+                  type="button"
+                  className="icon-button"
+                  aria-label="关闭设置"
+                  onPointerDown={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setSettings(false);
                   }}
-                />
+                  onClick={() => setSettings(false)}
+                >
+                  <X size={19} />
+                </button>
               </div>
-            </div>
-            <section className="settings-section">
-              <h3>备份你的日常</h3>
-              <p className="body-note">
-                最近导出：
-                {data.lastBackup
-                  ? new Date(data.lastBackup).toLocaleString('zh-CN')
-                  : '尚未导出'}
+              <p className="settings-description">
+                你的日记保存在当前设备与浏览器中。
               </p>
-              <button
-                className="gold-button full"
-                onClick={backup}
-                disabled={!usable}
-              >
-                <Download size={18} />
-                导出完整备份（JSON）
-              </button>
-              <button
-                className="soft-button full"
-                onClick={() => fileRef.current?.click()}
-              >
-                <Upload size={18} />
-                导入备份并恢复
-              </button>
-              <input
-                ref={fileRef}
-                className="sr-only"
-                aria-label="选择备份文件"
-                type="file"
-                accept=".json,application/json"
-                onChange={(e) => importFile(e.target.files?.[0])}
-              />
-              <button
-                className="soft-button full"
-                onClick={() =>
-                  download(
-                    csvExport(data),
-                    `拉格日记-记录-${today}.csv`,
-                    'text/csv;charset=utf-8',
-                  )
-                }
-                disabled={!usable}
-              >
-                <FileSpreadsheet size={18} />
-                导出记录表（CSV）
-              </button>
-              {rawBad.current && (
+              <div className="settings-section">
+                <div className="setting-row">
+                  <div>
+                    <strong>酒杯动效</strong>
+                    <p>
+                      当前：{data.prefs.motion ? '开启' : '关闭'}
+                      ；同时遵循系统“减少动态效果”设置
+                    </p>
+                  </div>
+                  <Switch
+                    aria-label="酒杯动效"
+                    checked={data.prefs.motion}
+                    onCheckedChange={(v) => {
+                      const enabled = Boolean(v);
+                      act(
+                        (d) => ({
+                          ...d,
+                          prefs: { ...d.prefs, motion: enabled },
+                        }),
+                        enabled ? '酒杯动效已开启' : '酒杯动效已关闭',
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+              <section className="settings-section">
+                <h3>备份你的日常</h3>
+                <p className="body-note">
+                  最近导出：
+                  {data.lastBackup
+                    ? new Date(data.lastBackup).toLocaleString('zh-CN')
+                    : '尚未导出'}
+                </p>
+                <button
+                  className="gold-button full"
+                  onClick={backup}
+                  disabled={!usable}
+                >
+                  <Download size={18} />
+                  导出完整备份（JSON）
+                </button>
+                <button
+                  className="soft-button full"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  <Upload size={18} />
+                  导入备份并恢复
+                </button>
+                <input
+                  ref={fileRef}
+                  className="sr-only"
+                  aria-label="选择备份文件"
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={(e) => importFile(e.target.files?.[0])}
+                />
                 <button
                   className="soft-button full"
                   onClick={() =>
                     download(
-                      rawBad.current,
-                      '拉格日记-原始数据.json',
-                      'application/json',
+                      csvExport(data),
+                      `拉格日记-记录-${today}.csv`,
+                      'text/csv;charset=utf-8',
                     )
                   }
+                  disabled={!usable}
                 >
-                  导出无法读取的原始数据
+                  <FileSpreadsheet size={18} />
+                  导出记录表（CSV）
                 </button>
-              )}
-              <p className="body-note">
-                将 JSON 备份保存到“文件”或 iCloud Drive，换手机后在这里导入。CSV
-                用于查看记录，不用于完整恢复。导出时间不代表文件已保存，请检查“文件”中的备份。
+                {rawBad.current && (
+                  <button
+                    className="soft-button full"
+                    onClick={() =>
+                      download(
+                        rawBad.current,
+                        '拉格日记-原始数据.json',
+                        'application/json',
+                      )
+                    }
+                  >
+                    导出无法读取的原始数据
+                  </button>
+                )}
+                <p className="body-note">
+                  将 JSON 备份保存到“文件”或 iCloud
+                  Drive，换手机后在这里导入。CSV
+                  用于查看记录，不用于完整恢复。导出时间不代表文件已保存，请检查“文件”中的备份。
+                </p>
+              </section>
+              <section className="settings-section">
+                <h3>
+                  <ShieldCheck size={18} />
+                  关于本机保存
+                </h3>
+                <p className="body-note">
+                  清除浏览器数据、卸载主屏幕应用或更换网址可能使本机记录不可用。Safari
+                  与主屏幕应用的存储可能独立，建议固定一种打开方式并定期备份。无账号、无自动云同步。
+                </p>
+              </section>
+              <section className="settings-section">
+                <h3>放到 iPhone 主屏幕</h3>
+                <p className="body-note">
+                  在 Safari 打开网站 → 分享 → 添加到主屏幕。日常从同一入口记录。
+                </p>
+              </section>
+              <p className="settings-signature">
+                拉格日记 · LAGER DAYS <span>v1.0</span>
               </p>
             </section>
-            <section className="settings-section">
-              <h3>
-                <ShieldCheck size={18} />
-                关于本机保存
-              </h3>
-              <p className="body-note">
-                清除浏览器数据、卸载主屏幕应用或更换网址可能使本机记录不可用。Safari
-                与主屏幕应用的存储可能独立，建议固定一种打开方式并定期备份。无账号、无自动云同步。
-              </p>
-            </section>
-            <section className="settings-section">
-              <h3>放到 iPhone 主屏幕</h3>
-              <p className="body-note">
-                在 Safari 打开网站 → 分享 → 添加到主屏幕。日常从同一入口记录。
-              </p>
-            </section>
-            <p className="settings-signature">
-              拉格日记 · LAGER DAYS <span>v1.0</span>
-            </p>
-          </DialogContent>
-        </Dialog>
+          </div>
+        )}
         <Dialog
           open={!!pending && !replace}
           onOpenChange={(open) => {
