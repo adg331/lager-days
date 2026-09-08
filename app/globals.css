@@ -1081,18 +1081,6 @@ small,
 .japan .country-track > div {
   background: #d9a43a;
 }
-.personal .country-track > div {
-  background: #778155;
-}
-.country.personal {
-  padding: 13px;
-  border: 1px solid #d9dfc8;
-  border-radius: 12px;
-  background: #f2f4eb;
-}
-.country.personal .rank {
-  color: #667144;
-}
 .missing-country {
   font-size: 11px;
   color: #9b8a70;

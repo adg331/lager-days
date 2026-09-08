@@ -655,11 +655,50 @@ export default function Home() {
       ctx.fillRect(0, 620, 1320, 520);
       ctx.fillStyle = '#f2f2f7';
       ctx.fillRect(0, 1080, 1320, 1788);
+      // Brand lockup, matching the app header. The glass fills the right half of
+      // the artwork, so the card is sized to its own text and stays inside the
+      // left safe area.
+      const wordmarkFont = `700 62px 'Songti SC', 'Noto Serif CJK SC', serif`;
+      const eyebrow = 'LAGER DAYS  ·  YEARLY JOURNAL';
+      ctx.font = wordmarkFont;
+      ctx.letterSpacing = '6px';
+      const wordmarkWidth = ctx.measureText('喝了么').width;
+      ctx.font = '600 22px sans-serif';
+      ctx.letterSpacing = '3px';
+      const eyebrowWidth = ctx.measureText(eyebrow).width;
+      const textLeft = 222;
+      ctx.beginPath();
+      ctx.roundRect(
+        82,
+        176,
+        textLeft - 82 + Math.max(wordmarkWidth, eyebrowWidth) + 36,
+        148,
+        40,
+      );
       ctx.fillStyle = 'rgba(255,255,255,.82)';
-      ctx.fillRect(82, 210, 1156, 96);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(158, 250, 40, 0, Math.PI * 2);
+      ctx.strokeStyle = '#8d6d34';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#8c611e';
+      ctx.font = `46px 'Songti SC', 'Noto Serif CJK SC', serif`;
+      ctx.letterSpacing = '0px';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('麦', 158, 252);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#1c1c1e';
+      ctx.font = wordmarkFont;
+      ctx.letterSpacing = '6px';
+      ctx.fillText('喝了么', textLeft, 246);
       ctx.fillStyle = '#6e6e73';
-      ctx.font = '600 32px sans-serif';
-      ctx.fillText('LAGER DAYS  ·  YEARLY JOURNAL', 118, 272);
+      ctx.font = '600 22px sans-serif';
+      ctx.letterSpacing = '3px';
+      ctx.fillText(eyebrow, textLeft, 292);
+      ctx.letterSpacing = '0px';
       ctx.fillStyle = '#1c1c1e';
       ctx.font = '700 92px serif';
       ctx.fillText(`${year} 年拉格回顾`, 88, 1235);
@@ -709,15 +748,31 @@ export default function Home() {
         ...referenceRows.map((row) => row.value),
         1,
       );
+      // Reserve the widest label and value so no name runs under the bars.
+      ctx.font = '30px sans-serif';
+      const rowLabel = (index: number) =>
+        `第 ${index + 1} 名  ${referenceRows[index].label}`;
+      const labelWidth = Math.max(
+        ...referenceRows.map(
+          (_, index) => ctx.measureText(rowLabel(index)).width,
+        ),
+      );
+      const valueWidth = Math.max(
+        ...referenceRows.map(
+          (row) => ctx.measureText(`${row.value.toFixed(1)} L`).width,
+        ),
+      );
+      const barX = 90 + labelWidth + 40;
+      const barWidth = 1230 - valueWidth - 40 - barX;
       referenceRows.forEach((row, index) => {
         const y = 1900 + index * 130;
         ctx.fillStyle = '#3a3a3c';
         ctx.font = '30px sans-serif';
-        ctx.fillText(`第 ${index + 1} 名  ${row.label}`, 90, y);
+        ctx.fillText(rowLabel(index), 90, y);
         ctx.fillStyle = '#e5e5ea';
-        ctx.fillRect(300, y - 24, 760, 20);
+        ctx.fillRect(barX, y - 24, barWidth, 20);
         ctx.fillStyle = row.color;
-        ctx.fillRect(300, y - 24, (row.value / referenceMax) * 760, 20);
+        ctx.fillRect(barX, y - 24, (row.value / referenceMax) * barWidth, 20);
         ctx.fillStyle = '#3a3a3c';
         ctx.textAlign = 'right';
         ctx.fillText(`${row.value.toFixed(1)} L`, 1230, y);
@@ -1449,7 +1504,7 @@ export default function Home() {
               </div>
               {comparisonRows.map((c, index) => (
                 <div
-                  className={`country ${c.name === '日本' ? 'japan' : ''} ${c.kind === 'personal' ? 'personal' : ''}`}
+                  className={`country ${c.name === '日本' ? 'japan' : ''}`}
                   key={c.name}
                 >
                   <div className="country-label">
