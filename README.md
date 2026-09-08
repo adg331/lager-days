@@ -12,7 +12,7 @@ public/lager-diary.html 是包含图片、样式和脚本的单文件版本，�
 
 ## 运行与验证
 
-Node >=22.13。npm ci；npm run dev；npm run build。node --experimental-strip-types --test lib/diary.test.ts；npx tsc --noEmit。生成单文件：node scripts/export-html.mjs，产物 standalone-build/喝了么.html。发布前把它复制到仓库根目录的 index.html（GitHub Pages 的入口）和 public/lager-diary.html；两处内容相同，推送后 Pages 会自动重新构建。
+Node >=22.13。npm ci；npm run dev；npm run build。node --experimental-strip-types --test lib/diary.test.ts；npx tsc --noEmit。生成单文件：node scripts/export-html.mjs，同时写入 standalone-build/喝了么.html、根目录 index.html（GitHub Pages 的入口）和 public/lager-diary.html，三份内容相同。改完代码跑一次该脚本再提交，推送后 Pages 会自动重新构建。产物本身被提交，因此 app/globals.css 用 `@source not` 把 index.html 和 public/lager-diary.html 排除在 Tailwind 扫描之外，否则上一次产物里的压缩字符串会被当成 class 生成多余 CSS，导致全新构建与增量构建结果不一致。
 
 ## 统计口径
 

@@ -1,6 +1,12 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+/* The single-file build output is committed (GitHub Pages serves the root
+   index.html). Without these it gets scanned as a content source and its own
+   minified strings come back as extra utilities, so a clean build and an
+   incremental one produce different CSS. */
+@source not '../index.html';
+@source not '../public/lager-diary.html';
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

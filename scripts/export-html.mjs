@@ -47,9 +47,18 @@ html = html.replace(
   '</head>',
   `<link rel="icon" href="${icon}"/><link rel="apple-touch-icon" href="${icon}"/></head>`,
 );
-await fs.writeFile(path.join(out, '喝了么.html'), html);
+// index.html at the repo root is what GitHub Pages serves; public/lager-diary.html
+// is the single-file copy the README points at. Writing both here keeps the
+// published page from drifting behind the source.
+const targets = [
+  path.join(out, '喝了么.html'),
+  path.join(root, 'index.html'),
+  path.join(root, 'public/lager-diary.html'),
+];
+for (const target of targets) await fs.writeFile(target, html);
 console.log(
   'Standalone HTML created (' +
     Math.round(Buffer.byteLength(html) / 1024) +
-    ' KB).',
+    ' KB): ' +
+    targets.map((target) => path.relative(root, target)).join(', '),
 );
