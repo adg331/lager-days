@@ -22,9 +22,9 @@ const photo =
   );
 const icon =
   'data:image/png;base64,' +
-  (
-    await fs.readFile(path.join(root, 'public/app-icon-liquid-512.png'))
-  ).toString('base64');
+  (await fs.readFile(path.join(root, 'public/app-icon-ios-512.png'))).toString(
+    'base64',
+  );
 for (const match of [
   ...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*><\/script>/g),
 ]) {

@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, title: '喝了么', statusBarStyle: 'default' },
   icons: {
-    icon: '/app-icon-liquid-512.png',
-    apple: '/apple-touch-icon-liquid.png',
+    icon: '/app-icon-ios-512.png',
+    apple: '/apple-touch-icon-ios.png',
   },
 };
 export const viewport: Viewport = {
