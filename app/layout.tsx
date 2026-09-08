@@ -5,7 +5,10 @@ export const metadata: Metadata = {
   description: '一杯一记。你的日本拉格啤酒日记、容量统计与世界对比。',
   manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, title: '喝了么', statusBarStyle: 'default' },
-  icons: { icon: '/app-icon-v2.png', apple: '/apple-touch-icon.png' },
+  icons: {
+    icon: '/app-icon-liquid-512.png',
+    apple: '/apple-touch-icon-liquid.png',
+  },
 };
 export const viewport: Viewport = {
   width: 'device-width',

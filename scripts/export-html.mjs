@@ -17,20 +17,20 @@ await build({
 let html = await fs.readFile(path.join(out, 'index.html'), 'utf8');
 const photo =
   'data:image/jpeg;base64,' +
-  (
-    await fs.readFile(path.join(root, 'public/beer-illustration-v2.jpg'))
-  ).toString('base64');
-const icon =
-  'data:image/png;base64,' +
-  (await fs.readFile(path.join(root, 'public/app-icon-v2.png'))).toString(
+  (await fs.readFile(path.join(root, 'public/beer-ios-v3.jpg'))).toString(
     'base64',
   );
+const icon =
+  'data:image/png;base64,' +
+  (
+    await fs.readFile(path.join(root, 'public/app-icon-liquid-512.png'))
+  ).toString('base64');
 for (const match of [
   ...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*><\/script>/g),
 ]) {
   let js = await fs.readFile(path.resolve(out, match[1]), 'utf8');
   js = js
-    .replaceAll('/beer-illustration-v2.jpg', photo)
+    .replaceAll('/beer-ios-v3.jpg', photo)
     .replaceAll('</script', '<\\/script');
   html = html.replace(
     match[0],

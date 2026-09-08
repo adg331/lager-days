@@ -639,31 +639,31 @@ export default function Home() {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw Error('当前浏览器无法生成分享图片');
       const image = new Image();
-      image.src = '/beer-illustration-v2.jpg';
+      image.src = '/beer-ios-v3.jpg';
       await image.decode();
       const actualLiters = yStats.ml / 1000;
-      ctx.fillStyle = '#f3efe3';
+      ctx.fillStyle = '#f2f2f7';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       const scale = Math.max(1320 / image.width, 1180 / image.height);
       const drawWidth = image.width * scale;
       const drawHeight = image.height * scale;
       ctx.drawImage(image, (1320 - drawWidth) / 2, -120, drawWidth, drawHeight);
       const gradient = ctx.createLinearGradient(0, 680, 0, 1120);
-      gradient.addColorStop(0, 'rgba(38,35,27,0.05)');
-      gradient.addColorStop(1, '#f3efe3');
+      gradient.addColorStop(0, 'rgba(242,242,247,0)');
+      gradient.addColorStop(1, '#f2f2f7');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 620, 1320, 520);
-      ctx.fillStyle = '#f3efe3';
+      ctx.fillStyle = '#f2f2f7';
       ctx.fillRect(0, 1080, 1320, 1788);
-      ctx.fillStyle = 'rgba(37,34,26,.72)';
+      ctx.fillStyle = 'rgba(255,255,255,.82)';
       ctx.fillRect(82, 210, 1156, 96);
-      ctx.fillStyle = '#f8f2df';
+      ctx.fillStyle = '#6e6e73';
       ctx.font = '600 32px sans-serif';
       ctx.fillText('LAGER DAYS  ·  YEARLY JOURNAL', 118, 272);
-      ctx.fillStyle = '#302f28';
+      ctx.fillStyle = '#1c1c1e';
       ctx.font = '700 92px serif';
       ctx.fillText(`${year} 年拉格回顾`, 88, 1235);
-      ctx.fillStyle = '#776a53';
+      ctx.fillStyle = '#6e6e73';
       ctx.font = '34px sans-serif';
       ctx.fillText('一杯一记，把这一年的金色时光收藏起来。', 90, 1308);
       const card = (
@@ -678,21 +678,21 @@ export default function Home() {
         ctx.fillStyle = color;
         ctx.fill();
       };
-      card(80, 1390, 360, 270, '#fffaf0');
-      card(480, 1390, 360, 270, '#fffaf0');
-      card(880, 1390, 360, 270, '#e8ecd9');
-      ctx.fillStyle = '#756b56';
+      card(80, 1390, 360, 270, '#ffffff');
+      card(480, 1390, 360, 270, '#ffffff');
+      card(880, 1390, 360, 270, '#fff7e6');
+      ctx.fillStyle = '#6e6e73';
       ctx.font = '30px sans-serif';
       ctx.fillText('饮酒日', 120, 1470);
       ctx.fillText('饮酒次', 520, 1470);
       ctx.fillText('500 mL 标准罐', 920, 1470);
-      ctx.fillStyle = '#7b5318';
+      ctx.fillStyle = '#1c1c1e';
       ctx.font = '700 92px Georgia, serif';
       ctx.fillText(String(yStats.drinkingDays), 120, 1590);
       ctx.fillText(String(yStats.entries), 520, 1590);
-      ctx.fillStyle = '#61703e';
+      ctx.fillStyle = '#b56a00';
       ctx.fillText((yStats.ml / 500).toFixed(1), 920, 1590);
-      ctx.fillStyle = '#302f28';
+      ctx.fillStyle = '#1c1c1e';
       ctx.font = '600 40px sans-serif';
       ctx.fillText('年度实际消耗与国家人均对比', 90, 1785);
       const china = countries.find((country) => country.name === '中国');
@@ -700,30 +700,30 @@ export default function Home() {
         ...countries.slice(0, 3).map((country) => ({
           label: country.name,
           value: country.liters,
-          color: '#c6ad78',
+          color: '#d7a13b',
         })),
-        { label: '中国', value: china?.liters ?? 28.8, color: '#ad9470' },
-        { label: '我的实际', value: actualLiters, color: '#6f7c49' },
-      ];
+        { label: '中国', value: china?.liters ?? 28.8, color: '#b8a087' },
+        { label: '我的实际', value: actualLiters, color: '#ff9f0a' },
+      ].sort((a, b) => b.value - a.value);
       const referenceMax = Math.max(
         ...referenceRows.map((row) => row.value),
         1,
       );
       referenceRows.forEach((row, index) => {
         const y = 1900 + index * 130;
-        ctx.fillStyle = '#786d5a';
+        ctx.fillStyle = '#3a3a3c';
         ctx.font = '30px sans-serif';
-        ctx.fillText(row.label, 90, y);
-        ctx.fillStyle = '#ded7c8';
+        ctx.fillText(`第 ${index + 1} 名  ${row.label}`, 90, y);
+        ctx.fillStyle = '#e5e5ea';
         ctx.fillRect(300, y - 24, 760, 20);
         ctx.fillStyle = row.color;
         ctx.fillRect(300, y - 24, (row.value / referenceMax) * 760, 20);
-        ctx.fillStyle = '#524939';
+        ctx.fillStyle = '#3a3a3c';
         ctx.textAlign = 'right';
         ctx.fillText(`${row.value.toFixed(1)} L`, 1230, y);
         ctx.textAlign = 'left';
       });
-      ctx.fillStyle = '#988b75';
+      ctx.fillStyle = '#8e8e93';
       ctx.font = '25px sans-serif';
       ctx.fillText('国家数据：Kirin 2024 · 我的实际：喝了么本机记录', 90, 2735);
       const blob = await new Promise<Blob | null>((resolve) =>
@@ -911,7 +911,7 @@ export default function Home() {
             >
               <img
                 className="beer-photo"
-                src="/beer-illustration-v2.jpg"
+                src="/beer-ios-v3.jpg"
                 alt="原创手绘的金色拉格酒杯、白色泡沫与自然侧光"
               />
               <div className="hero-copy">
@@ -1417,10 +1417,7 @@ export default function Home() {
               </label>
             </section>
             <section className="annual-share-card">
-              <img
-                src="/beer-illustration-v2.jpg"
-                alt="原创手绘的金色拉格酒杯"
-              />
+              <img src="/beer-ios-v3.jpg" alt="原创手绘的金色拉格酒杯" />
               <div className="annual-share-overlay" />
               <div className="annual-share-content">
                 <span>LAGER DAYS · YEARLY JOURNAL</span>
