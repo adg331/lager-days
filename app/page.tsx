@@ -68,6 +68,8 @@ import {
 } from '@/lib/diary';
 const stamp = () => new Date().toISOString();
 const IMPORT_UNDO_KEY = 'lager-diary.import-undo.v1';
+// Referenced once so the single-file export inlines the photo only once.
+const BEER_PHOTO = '/beer-ios-v3.jpg';
 type ImportUndo = {
   version: 1;
   createdAt: string;
@@ -639,7 +641,7 @@ export default function Home() {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw Error('当前浏览器无法生成分享图片');
       const image = new Image();
-      image.src = '/beer-ios-v3.jpg';
+      image.src = BEER_PHOTO;
       await image.decode();
       const actualLiters = yStats.ml / 1000;
       ctx.fillStyle = '#f2f2f7';
@@ -966,7 +968,7 @@ export default function Home() {
             >
               <img
                 className="beer-photo"
-                src="/beer-ios-v3.jpg"
+                src={BEER_PHOTO}
                 alt="原创手绘的金色拉格酒杯、白色泡沫与自然侧光"
               />
               <div className="hero-copy">
@@ -1472,7 +1474,7 @@ export default function Home() {
               </label>
             </section>
             <section className="annual-share-card">
-              <img src="/beer-ios-v3.jpg" alt="原创手绘的金色拉格酒杯" />
+              <img src={BEER_PHOTO} alt="原创手绘的金色拉格酒杯" />
               <div className="annual-share-overlay" />
               <div className="annual-share-content">
                 <span>LAGER DAYS · YEARLY JOURNAL</span>
